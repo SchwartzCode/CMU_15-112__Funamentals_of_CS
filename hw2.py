@@ -130,11 +130,55 @@ def clearLeftmostDigit(n):
 
     return n
 
+def makeMove(board,pos,move):
+    if move != 1 and move != 2:
+        return "move must be 1 or 2!"
+    if pos > digitCount(board):
+        return "offboard!"
 
+    posDex = digitCount(board) - pos
 
+    if kthDigit(board, posDex) != 8:
+        return "occupied!"
+    else:
+        board = replaceKthDigit(board, posDex, move)
 
+    return board
 
+def isWin(board):
+    #checks if the sequence '112' is somehwere in the board
+    for i in range(2,digitCount(board)):
+        if (board // 10**(i-2) % 1000) == 112:
+            return True
 
+    return False
+
+def isFull(board):
+    #check if the board is full (i.e. contains no 8's)
+    for i in range(digitCount(board)):
+        if kthDigit(board, i) == 8:
+            return False
+    return True
+
+def play112(game):
+    #function that drives the actual game
+    board = makeBoard(getLeftmostDigit(game))
+    clearLeftmostDigit(game)
+
+    while game > 0:
+        player = getLeftmostDigit(game)
+        game = clearLeftmostDigit(game)
+
+        pos = getLeftmostDigit(game)
+        game = clearLeftmostDigit(game)
+
+        move =  getLeftmostDigit(game)
+        game = clearLeftmostDigit(game)
+
+        
+
+play112(112)
+print()
 
 
 def testHelperFuncs():
@@ -170,9 +214,33 @@ def testHelperFuncs():
     assert(clearLeftmostDigit(9) == 0)
     assert(clearLeftmostDigit(0) == 0)
     assert(clearLeftmostDigit(60789) == 789)
+
+    assert(makeMove(8, 1, 1) == 1)
+    assert(makeMove(888888, 1, 1) == 188888)
+    assert(makeMove(888888, 2, 1) == 818888)
+    assert(makeMove(888888, 5, 2) == 888828)
+    assert(makeMove(888888, 6, 2) == 888882)
+    assert(makeMove(888888, 6, 3) == "move must be 1 or 2!")
+    assert(makeMove(888888, 7, 1) == "offboard!")
+    assert(makeMove(888881, 6, 1) == "occupied!")
+
+    assert(isWin(888888) == False)
+    assert(isWin(112888) == True)
+    assert(isWin(811288) == True)
+    assert(isWin(888112) == True)
+    assert(isWin(211222) == True)
+    assert(isWin(212212) == False)
+
+    assert(isFull(888888) == False)
+    assert(isFull(121888) == False)
+    assert(isFull(812188) == False)
+    assert(isFull(888121) == False)
+    assert(isFull(212122) == True)
+    assert(isFull(212212) == True)
+
     print("Passed!")
 
-testHelperFuncs()
+#testHelperFuncs()
 
 def testPlay112():
     print("Testing play112()...")
