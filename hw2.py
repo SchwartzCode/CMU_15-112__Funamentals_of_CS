@@ -67,6 +67,8 @@ print("First 15 circular primes:")
 for i in range(1,16):
     print(i,"-", nthCircularPrime(i))
 
+print("\n")
+
 
 
 def makeBoard(moves):
@@ -80,7 +82,7 @@ def makeBoard(moves):
 def digitCount(x):
     #returns integer equal to number of digits in x
     x = abs(x)
-    if x == 0:
+    if x // 10 == 0:
         #because log(0) is infinity and that makes python big mad
         return 1
     else:
@@ -163,22 +165,33 @@ def isFull(board):
 def play112(game):
     #function that drives the actual game
     board = makeBoard(getLeftmostDigit(game))
-    clearLeftmostDigit(game)
-
+    game = clearLeftmostDigit(game)
+    player = 1
     while game > 0:
-        player = getLeftmostDigit(game)
-        game = clearLeftmostDigit(game)
-
         pos = getLeftmostDigit(game)
         game = clearLeftmostDigit(game)
 
         move =  getLeftmostDigit(game)
         game = clearLeftmostDigit(game)
 
-        
+        moveOutput = makeMove(board, pos, move)
 
-play112(112)
-print()
+        if isinstance(moveOutput, str):
+            return str(board) + ": Player " + str(player) + ": " + moveOutput
+        else:
+            board = moveOutput
+
+        if isWin(board):
+            return str(board) + ": Player " + str(player) + " wins!"
+        elif isFull(board):
+            return str(board) + ": Tie!"
+
+        if player == 1:
+            player = 2
+        else:
+            player = 1
+
+    return str(board) + ": Unfinished!"
 
 
 def testHelperFuncs():
@@ -258,3 +271,5 @@ def testPlay112():
     assert(play112( 51261 ) == "28888: Player 2: offboard!")
     assert(play112( 51122324152 ) == "12212: Tie!")
     print("Passed!")
+
+testPlay112()
