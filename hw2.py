@@ -93,8 +93,9 @@ def kthDigit(n,k):
     return (n // 10**k) % 10
 
 def replaceKthDigit(num, dex, val):
-    if 0>dex or dex>9:
-        print("ERROR: Index must be between 0 and 9 (inclusive). You entered:", dex)
+    #replaces kth digit of num with val
+    if 0>val or val>9:
+        print("ERROR: Value to be inserted must be between 0 and 9 (inclusive). You entered:", val)
     digits = digitCount(num)
 
     if dex >= digits:
@@ -109,27 +110,69 @@ def replaceKthDigit(num, dex, val):
 
         return output
 
+def getLeftmostDigit(n):
+    #returns the lefternmost digit of n
+    digis = digitCount(n)
 
-assert(makeBoard(1) == 8)
-assert(makeBoard(2) == 88)
-assert(makeBoard(3) == 888)
+    if digis == 1:
+        return n
+    else:
+        return (n // 10**(digis-1)) % 10
 
-assert(digitCount(0) == 1)
-assert(digitCount(5) == digitCount(-5) == 1)
-assert(digitCount(42) == digitCount(-42) == 2)
-assert(digitCount(121) == digitCount(-121) == 3)
+def clearLeftmostDigit(n):
+    #makes lefternmost digit 0
+    digis = digitCount(n)
 
-assert(kthDigit(789, 0) == kthDigit(-789, 0) == 9)
-assert(kthDigit(789, 1) == kthDigit(-789, 1) == 8)
-assert(kthDigit(789, 2) == kthDigit(-789, 2) == 7)
-assert(kthDigit(789, 3) == kthDigit(-789, 3) == 0)
-assert(kthDigit(789, 4) == kthDigit(-789, 4) == 0)
+    if digis == 1:
+        return 0
 
-assert(replaceKthDigit(789, 0, 6) == 786)
-assert(replaceKthDigit(789, 1, 6) == 769)
-assert(replaceKthDigit(789, 2, 6) == 689)
-assert(replaceKthDigit(789, 3, 6) == 6789)
-assert(replaceKthDigit(789, 4, 6) == 60789)
+    n = replaceKthDigit(n,(digis-1),0)
+
+    return n
+
+
+
+
+
+
+
+
+def testHelperFuncs():
+    print("Testing helper functions for play112...")
+    assert(makeBoard(1) == 8)
+    assert(makeBoard(2) == 88)
+    assert(makeBoard(3) == 888)
+
+    assert(digitCount(0) == 1)
+    assert(digitCount(5) == digitCount(-5) == 1)
+    assert(digitCount(42) == digitCount(-42) == 2)
+    assert(digitCount(121) == digitCount(-121) == 3)
+
+    assert(kthDigit(789, 0) == kthDigit(-789, 0) == 9)
+    assert(kthDigit(789, 1) == kthDigit(-789, 1) == 8)
+    assert(kthDigit(789, 2) == kthDigit(-789, 2) == 7)
+    assert(kthDigit(789, 3) == kthDigit(-789, 3) == 0)
+    assert(kthDigit(789, 4) == kthDigit(-789, 4) == 0)
+
+    assert(replaceKthDigit(789, 0, 6) == 786)
+    assert(replaceKthDigit(789, 1, 6) == 769)
+    assert(replaceKthDigit(789, 2, 6) == 689)
+    assert(replaceKthDigit(789, 3, 6) == 6789)
+    assert(replaceKthDigit(789, 4, 6) == 60789)
+
+    assert(getLeftmostDigit(7089) == 7)
+    assert(getLeftmostDigit(89) == 8)
+    assert(getLeftmostDigit(9) == 9)
+    assert(getLeftmostDigit(0) == 0)
+
+    assert(clearLeftmostDigit(789) == 89)
+    assert(clearLeftmostDigit(89) == 9)
+    assert(clearLeftmostDigit(9) == 0)
+    assert(clearLeftmostDigit(0) == 0)
+    assert(clearLeftmostDigit(60789) == 789)
+    print("Passed!")
+
+testHelperFuncs()
 
 def testPlay112():
     print("Testing play112()...")
