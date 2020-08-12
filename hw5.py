@@ -1,5 +1,12 @@
 import basic_graphics
 import tkinter as tk
+import random
+
+
+cellPosx = 2
+cellPosy = 2
+masterBoard = [ [0]*9 for i in range(9)]
+initNums = [ [0]*9 for i in range(9)]
 
 def areLegalValues(vals):
     # returns true if all elements in vals are valid sudoku values (integers 1-9, or 0 for blank space)
@@ -104,10 +111,16 @@ TKroot = tk.Tk()
 
 
 
-def drawSudoku(canvas, width, height, board, margin):
+def drawSudoku(canvas, width, height, board, initNums, margin):
     # NOTE: Add a conditional to handle 4x4, 16x16 boards
     test = tk.Canvas(canvas, width=width, height=height)
+    test.bind("<Button-1>", mouseClick)
     test.pack()
+
+    spacing = (height - 2*margin) // len(board[0])
+
+    test.create_rectangle( (margin+spacing*cellPosx), (margin+spacing*cellPosy), (margin+spacing*( cellPosx+1)), (margin+spacing*(cellPosy+1)), fill='yellow', tags="activeSquare")
+
 
     #draw border lines
     borderWidth = 2.5
@@ -140,10 +153,84 @@ def drawSudoku(canvas, width, height, board, margin):
 
     for i in range(len(board[0])):
         for j in range(len(board[0])):
-            test.create_text(margin + (j+0.5)*widthGap, margin + (i+0.5)*widthGap, text=board[i][j], fill="purple", font="Helvetica 12")
+            if board[i][j] != '0':
+                if initNums[i][j]:
+                    test.create_text(margin + (j+0.5)*widthGap, margin + (i+0.5)*widthGap, text=board[i][j], fill="purple", font="Helvetica 12 bold")
+                else:
+                    test.create_text(margin + (j+0.5)*widthGap, margin + (i+0.5)*widthGap, text=board[i][j], font="Helvetica 12")
 
     TKroot.mainloop()
 
 
-drawSudoku(TKroot, 400, 400, test_doku, 20)
-#basic_graphics.run(width=400, height=600)
+#drawSudoku(TKroot, 400, 400, test_doku, 20)
+
+def starterBoard():
+    fpath = r"C:\Users\jonbs\Documents\JonathanStuff\CMU_Stuff\15-112__Fundamentals_of_CS\sudokus.txt"
+
+    dokus = [ ]
+    with open(fpath, 'r') as file:
+        for line in file:
+            line = line.rstrip("\n")
+            dokus.append(line)
+        choice = int(random.random()*50)
+
+    board = [ [0]*9 for i in range(9)]
+    initNums = [ [0]*9 for i in range(9)]
+    for i in range(1,10):
+        for j in range(9):
+            board[i-1][j] = dokus[choice*10 + i][j]
+            if dokus[choice*10 + i][j] != '0':
+                initNums[i-1][j] = 1
+
+    #print(board, "\n", initNums)
+    return board, initNums
+
+# These are important for mouseClick()
+frameSideLen = 400
+marginMaster = 20
+
+
+
+def mouseClick(event):
+    global updateWaiting
+    print("clicked at", event.x, event.y)
+    if (frameSideLen - marginMaster) > event.x > marginMaster and (frameSideLen - marginMaster) > event.y > marginMaster:
+        spacing = (frameSideLen - 2*marginMaster) / 9
+        cellPosx = int( (event.x - marginMaster) // spacing )
+        cellPosy = int ( (event.y - marginMaster) // spacing )
+
+        masterBoard.delete("activeSquare")
+
+        updateWaiting = True
+
+def gameWon(board):
+    for i in range(len(board)):
+        for j in range(len(board[0])):
+            if board[i][j] == '0':
+                return False
+    return True
+
+
+
+def playSudoku():
+    masterBoard, initNums = starterBoard()
+    global updateWaiting
+    updateWaiting = False
+
+    drawSudoku(TKroot, frameSideLen, frameSideLen, masterBoard, initNums, marginMaster)
+
+    while not gameWon(masterBoard):
+
+        print("oo")
+        if updateWaiting:
+            drawSudoku(TKroot, frameSideLen, frameSideLen, masterBoard, initNums, marginMaster)
+            updateWaiting = False
+
+        #gonna need some more stoofs here
+
+playSudoku()
+
+# do this to resolve sudoku redrawing issue: https://stackoverflow.com/questions/9881534/binding-one-button-to-two-events-with-tkinter
+# you might still need globals though :/
+
+# maybe make sudoku class, and then tkinter stuff is outside?
