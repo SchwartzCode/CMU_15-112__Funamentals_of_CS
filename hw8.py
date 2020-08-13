@@ -159,6 +159,19 @@ class tetrisGame(object):
         #merges active piece and background
         print('merging piece')
 
+        for i in range(len(self.activePiece.piece)):
+            for j in range(len(self.activePiece.piece[0])):
+                if self.activePiece.piece[i][j] == True:
+
+                    print(j+self.activePiece.xLoc, self.activePiece.yLoc - len(self.activePiece.piece) + i, "\t")
+                    self.board[1+self.activePiece.yLoc - len(self.activePiece.piece) + i][j+self.activePiece.xLoc] = self.activePiece.color
+                    #self.canvas.create_rectangle(self.margin+(j+self.activePiece.xLoc)*self.boxWidth, self.margin+(i+self.activePiece.yLoc)*self.boxWidth,
+                    #    self.margin+(j+1+self.activePiece.xLoc)*self.boxWidth, self.margin+(i+1+self.activePiece.yLoc)*self.boxWidth, fill=self.activePiece.color, width=2.5, tags='activePiece')
+            print("\n")
+
+        self.fillBoard()
+        self.activePiece = tetrisPiece()
+
     def drawPiece(self):
         if self.activePiece.yLoc == 14 or self.pieceTouch():
             self.mergePiece()
