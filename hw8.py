@@ -177,15 +177,21 @@ class tetrisGame(object):
                     #    self.margin+(j+1+self.activePiece.xLoc)*self.boxWidth, self.margin+(i+1+self.activePiece.yLoc)*self.boxWidth, fill=self.activePiece.color, width=2.5, tags='activePiece')
             print("\n")
 
-        #check for full rows
+        #check for full rows, clear them if so
         for i in range(len(self.board)):
             for j in range(len(self.board[0])):
                 if self.board[i][j] == 'gray':
-                    print("aaaa")
+                    print('skipping:', i)
                     break
                 elif j == len(self.board[0]) - 1:
-                    print('oopie', i)
-
+                    print("no skippy: ", i)
+                    for k in range(i-1, 0, -1):
+                        print('merging: ', k, 'into', k+1)
+                        self.board[k+1] = self.board[k]
+                    self.board[0] = ['gray']*10
+                    self.score += 1
+                    self.canvas.delete('score')
+                    self.canvas.create_text(self.width/2, self.margin/2,text=('Score: ' + str(self.score)), fill='purple', tags='score', font="Arial 14 bold")
                 print('pp', j)
                 print(i, end=' ')
         print("\n")
@@ -213,7 +219,7 @@ class tetrisGame(object):
                             self.margin+(j+1+self.activePiece.xLoc)*self.boxWidth, self.margin+(i+1+self.activePiece.yLoc)*self.boxWidth, fill=self.activePiece.color, width=2.5, tags='activePiece')
 
     def updateClock(self):
-        print(self.score)
+        #print(self.score)
         self.drawPiece()
         self.activePiece.yLoc += 1
 
