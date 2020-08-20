@@ -40,7 +40,7 @@ class tetrisPiece(object):
     colorOptions = ["red", "yellow", "magenta", "pink", "cyan", "green", "orange"]
 
     def __init__(self):
-        self.piece = self.tetrisPieces[ int(random.random()*7) ]
+        self.piece = self.tetrisPieces[0]#self.tetrisPieces[ int(random.random()*7) ]
         self.color = self.colorOptions[ int(random.random()*7) ]
         self.xLoc = 4
         # idea of these conditionals was to have it so only bottom row printed
@@ -75,7 +75,7 @@ class tetrisGame(object):
         self.canvas.bind("<space>", self.rotatePiece)
         self.canvas.bind("<Left>", self.leftKey)
         self.canvas.bind("<Right>", self.rightKey)
-        self.canvas.bind("<Down>", self.downKey)
+        #self.canvas.bind("<Down>", self.downKey)
         self.canvas.focus_set() #need this for canvas to detect arrow key presses
         self.canvas.pack()
 
@@ -128,31 +128,39 @@ class tetrisGame(object):
             self.updateClock()
 
     def rotatePiece(self, event):
-        print("shmoopie")
-        print(self.activePiece.piece)
+        #print("shmoopie")
+        #print(len(self.activePiece.piece), self.activePiece.piece)
         self.activePiece.piece = list(zip(*self.activePiece.piece[::-1]))
-        print(self.activePiece.piece, "\n\n")
+        #print(len(self.activePiece.piece), self.activePiece.piece, "\n\n")
 
     def leftKey(self, event):
-        print("LEFT")
+        #print("LEFT")
         if self.activePiece.xLoc != 0:
             self.activePiece.xLoc -= 1
             self.drawPiece()
 
 
     def rightKey(self, event):
-        print("RIGHT")
-        if self.activePiece.xLoc + len(self.activePiece.piece) < 9:
+        #print("RIGHT")
+        if self.activePiece.xLoc + len(self.activePiece.piece[0]) < 10:
             self.activePiece.xLoc += 1
             self.drawPiece()
+        else:
+            print(self.activePiece.xLoc, len(self.activePiece.piece))
 
     def downKey(self, event):
-        print("DOWN")
+        #print("DOWN")
         self.activePiece.yLoc += 1
         self.drawPiece()
 
     def pieceTouch(self):
         #returns true if activePiece is touching old pieces left on board, false if not
+        for i in range(len(self.activePiece.piece[0])):
+            if self.activePiece.piece[-1][i]:
+                if self.board[self.activePiece.yLoc + 1][self.activePiece.xLoc + i] != 'gray':
+                    return True
+
+
         return False
 
     def mergePiece(self):
@@ -163,11 +171,24 @@ class tetrisGame(object):
             for j in range(len(self.activePiece.piece[0])):
                 if self.activePiece.piece[i][j] == True:
 
-                    print(j+self.activePiece.xLoc, self.activePiece.yLoc - len(self.activePiece.piece) + i, "\t")
+                    #print(j+self.activePiece.xLoc, self.activePiece.yLoc - len(self.activePiece.piece) + i, "\t")
                     self.board[1+self.activePiece.yLoc - len(self.activePiece.piece) + i][j+self.activePiece.xLoc] = self.activePiece.color
                     #self.canvas.create_rectangle(self.margin+(j+self.activePiece.xLoc)*self.boxWidth, self.margin+(i+self.activePiece.yLoc)*self.boxWidth,
                     #    self.margin+(j+1+self.activePiece.xLoc)*self.boxWidth, self.margin+(i+1+self.activePiece.yLoc)*self.boxWidth, fill=self.activePiece.color, width=2.5, tags='activePiece')
             print("\n")
+
+        #check for full rows
+        for i in range(len(self.board)):
+            for j in range(len(self.board[0])):
+                if self.board[i][j] == 'gray':
+                    print("aaaa")
+                    break
+                elif j == len(self.board[0]) - 1:
+                    print('oopie', i)
+
+                print('pp', j)
+                print(i, end=' ')
+        print("\n")
 
         self.fillBoard()
         self.activePiece = tetrisPiece()
@@ -196,7 +217,7 @@ class tetrisGame(object):
         self.drawPiece()
         self.activePiece.yLoc += 1
 
-        self.TKroot.after(750, self.updateClock)
+        self.TKroot.after(350, self.updateClock)
 
 test = tetrisGame()
 
