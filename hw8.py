@@ -40,7 +40,7 @@ class tetrisPiece(object):
     colorOptions = ["red", "yellow", "magenta", "pink", "cyan", "green", "orange"]
 
     def __init__(self):
-        self.piece = self.tetrisPieces[0]#self.tetrisPieces[ int(random.random()*7) ]
+        self.piece = self.tetrisPieces[ int(random.random()*7) ]
         self.color = self.colorOptions[ int(random.random()*7) ]
         self.xLoc = 4
         # idea of these conditionals was to have it so only bottom row printed
@@ -128,28 +128,24 @@ class tetrisGame(object):
             self.updateClock()
 
     def rotatePiece(self, event):
-        #print("shmoopie")
-        #print(len(self.activePiece.piece), self.activePiece.piece)
-        self.activePiece.piece = list(zip(*self.activePiece.piece[::-1]))
-        #print(len(self.activePiece.piece), self.activePiece.piece, "\n\n")
+        newPiece = list(zip(*self.activePiece.piece[::-1]))
+
+        if self.activePiece.xLoc + len(newPiece[0]) < 11:
+            self.activePiece.piece = newPiece
 
     def leftKey(self, event):
-        #print("LEFT")
         if self.activePiece.xLoc != 0:
             self.activePiece.xLoc -= 1
             self.drawPiece()
 
 
     def rightKey(self, event):
-        #print("RIGHT")
         if self.activePiece.xLoc + len(self.activePiece.piece[0]) < 10:
             self.activePiece.xLoc += 1
             self.drawPiece()
-        else:
-            print(self.activePiece.xLoc, len(self.activePiece.piece))
 
     def downKey(self, event):
-        #print("DOWN")
+        # this function isn't currently bound to down key because tkinter doesn't like it much
         self.activePiece.yLoc += 1
         self.drawPiece()
 
@@ -196,8 +192,22 @@ class tetrisGame(object):
                 print(i, end=' ')
         print("\n")
 
-        self.fillBoard()
-        self.activePiece = tetrisPiece()
+
+        #check if top row has any pieces in it, if so end the game
+        for i in range(len(self.board[0])):
+            if self.board[0][i] != 'gray':
+                if not self.gameRunning:
+                    self.fillBoard()
+                print("GAME OVER GAME OVER GAME OVER")
+                self.gameRunning = False
+                self.canvas.create_oval(self.width/2 - 100, self.height/2 - 100, self.width/2 + 100, self.height/2 + 100, fill='red', outline='', tags='endScreen')
+                self.canvas.create_text(self.width/2, self.height/2 - 10, fill='white', text='GAME OVER', font="Arial 20 bold", tags='endScreen')
+                self.canvas.create_text(self.width/2, self.height/2 + 30, fill='white', text='Score: ' + str(self.score), font="Arial 16", tags='endScreen')
+                self.TKroot.after_cancel(self.stepper)
+
+        if self.gameRunning:
+            self.fillBoard()
+            self.activePiece = tetrisPiece()
 
     def drawPiece(self):
         if self.activePiece.yLoc == 14 or self.pieceTouch():
@@ -219,11 +229,11 @@ class tetrisGame(object):
                             self.margin+(j+1+self.activePiece.xLoc)*self.boxWidth, self.margin+(i+1+self.activePiece.yLoc)*self.boxWidth, fill=self.activePiece.color, width=2.5, tags='activePiece')
 
     def updateClock(self):
-        #print(self.score)
-        self.drawPiece()
-        self.activePiece.yLoc += 1
+        if self.gameRunning:
+            self.drawPiece()
+            self.activePiece.yLoc += 1
 
-        self.TKroot.after(350, self.updateClock)
+            self.stepper = self.TKroot.after(250, self.updateClock)
 
 test = tetrisGame()
 
