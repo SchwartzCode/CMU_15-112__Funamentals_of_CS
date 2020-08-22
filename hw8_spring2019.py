@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import timeit
+from timeit import default_timer as timer
 
 # this function swaps the first and last elements of a list
 #   time complexity: O(N)
@@ -78,7 +78,7 @@ def quick3(s):
 
     return maxLetter                        #O(1)
 
-
+# This function finds the largest difference between an element in a and an element in b
 # time complexity: O(N^2)
 def slow4(a, b): # a and b are lists with the same length N
     n = len(a)                      # O(1)
@@ -90,6 +90,30 @@ def slow4(a, b): # a and b are lists with the same length N
             if (delta > result):            # O(1)
                 result = delta              # O(1)
     return result                   # O(1)
+
+#
+def quick4(a, b):
+    assert(len(a) == len(b))                    # O(1)
+    aMax = a[0]                                 # O(1)
+    aMin = a[0]                                 # O(1)
+    bMax = b[0]                                 # O(1)
+    bMin = b[0]                                 # O(1)
+
+    for i in range(len(a)):                     # O(N)
+        if a[i] > aMax:                             # O(1)
+            aMax = a[i]                             # O(1)
+        elif a[i] < aMin:                           # O(1)
+            aMin = a[i]                             # O(1)
+
+        if b[i] > bMax:                             # O(1)
+            bMax = b[i]                             # O(1)
+        elif b[i] < bMin:                           # O(1)
+            bMin = b[i]                             # O(1)
+
+    if abs(aMax - bMin) > abs(bMax - aMin):     # O(1)
+        return abs(aMax - bMin)                 # O(1)
+    else:                                       # O(1)
+        return abs(bMax - aMin)                 # O(1)
 
 
 
@@ -118,10 +142,15 @@ plt.plot(n_vals, times)
 plt.show()
 """
 
+
+
 # Making sure my functions work the same as the intial function
 tester = [1, 2, 3, 4]
 tester2 = [1, 2, 3, 1, 3, 5, 6, 7, 3]
 tester3 = 'HEY pp BABYYYYYY give me thaT penelope'
+tester4 = [10, 9, 8, 7]
 assert(slow1(tester.copy()) == quick1(tester.copy()))
 assert(slow2(tester2.copy()) == quick2(tester2.copy()))
 assert(slow3(tester3) == quick3(tester3))
+assert(slow4(tester, tester4) == quick4(tester, tester4))
+assert(slow4(tester4, tester) == quick4(tester4, tester))
