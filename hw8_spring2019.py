@@ -117,33 +117,47 @@ def quick4(a, b):
 
 
 
-"""
-# tried to do a manual big O estimate
-times = [ ]
-n_vals = [ ]
 
-for i in range(5,20):
-    test = np.arange(0, 100*i)
-    n_vals.append(len(test))
-    test = test.tolist()
+def compareFuncs(oldFunc, newFunc, input):
+    # i don't believe this works right
+    oldT = [ ]
+    newT = [ ]
+    nVals = 100*np.arange(1, 6)
 
-    max = 0
-    for j in range(10000):
-        start = time.time()
-        slow1(test)
-        end = time.time()
-        if (end-start) > max:
-            max = end-start
+    runs = 10000
 
+    for i in range(len(nVals)):
+        maxT = 0
+        for j in range(runs):
+            start = timer()
+            oldFunc(input[:nVals[i]])
+            end = timer()
+            if (end - start) > maxT:
+                maxT = end - start
 
-    times.append(max)
+        oldT.append( maxT )
 
-plt.plot(n_vals, times)
-plt.show()
-"""
+        maxT = 0
 
+        for k in range(runs):
+            start = timer()
+            newFunc(input[:nVals[i]])
+            end = timer()
+            if (end - start) > maxT:
+                maxT = end - start
+        newT.append( maxT )
 
+        #print(i, oldT[i], newT[i])
 
+    plt.plot(nVals, oldT, label='Old Func')
+    plt.plot(nVals, newT, label='New Func')
+    plt.legend()
+    plt.show()
+
+input1 = np.linspace(0,1000,num=1001).tolist()
+
+compareFuncs(slow1, quick1, input1)
+compareFuncs(slow2, quick2, input1)
 # Making sure my functions work the same as the intial function
 tester = [1, 2, 3, 4]
 tester2 = [1, 2, 3, 1, 3, 5, 6, 7, 3]
